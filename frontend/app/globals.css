@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-a: #f7f3ef;
+  --bg-b: #e8eef6;
+  --ink: #0f1c2e;
+  --sea: #1f6f8b;
+  --coral: #e07a5f;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #d9e7f2 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #f2d9d0 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-a), var(--bg-b));
+  min-height: 100vh;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: rise 0.6s ease-out both;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
