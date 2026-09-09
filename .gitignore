@@ -20,3 +20,4 @@ pgdata/
 resolveai.db
 *.db-journal
 frontend/.env.local
+docs/test_report_data.json

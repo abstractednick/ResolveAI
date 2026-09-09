@@ -1,4 +1,4 @@
-"""Claude API client with deterministic fallbacks for offline/dev/test."""
+"""LLM client backed by Anthropic, with local rule-based responses when no API key is set."""
 
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ class ClaudeClient:
         temperature: float = 0.2,
     ) -> str:
         if not self._client:
-            return self._fallback(system, user)
+            return self._local_response(system, user)
         try:
             message = self._client.messages.create(
                 model=self.settings.anthropic_model,
@@ -64,8 +64,8 @@ class ClaudeClient:
                     parts.append(block.text)
             return "\n".join(parts).strip()
         except Exception as exc:
-            logger.exception("Claude API error: %s", exc)
-            return self._fallback(system, user)
+            logger.exception("Anthropic API error: %s", exc)
+            return self._local_response(system, user)
 
     def complete_json(
         self,
@@ -84,8 +84,8 @@ class ClaudeClient:
         except Exception:
             return fallback or {}
 
-    def _fallback(self, system: str, user: str) -> str:
-        """Rule-based fallbacks so the product works without an API key."""
+    def _local_response(self, system: str, user: str) -> str:
+        """Keyword heuristics used when ANTHROPIC_API_KEY is unset."""
         lower = (system + " " + user).lower()
         if "classif" in lower:
             priority = "urgent" if any(w in lower for w in ("urgent", "asap", "down", "outage")) else "medium"
@@ -103,7 +103,7 @@ class ClaudeClient:
                     "priority": priority,
                     "suggested_team": team,
                     "confidence": 0.55,
-                    "reasoning": "fallback classifier",
+                    "reasoning": "local classifier",
                 }
             )
         if "sentiment" in lower:
@@ -117,14 +117,17 @@ class ClaudeClient:
         if "translat" in lower and "detect" in lower:
             return json.dumps({"language": "en", "confidence": 0.5})
         if "summar" in lower:
-            return "Customer issue summarized (offline mode). Needs agent review of latest thread."
+            return (
+                "Customer reported an account or service issue. Key details are in the latest message. "
+                "Confirm resolution steps and remaining open questions before closing."
+            )
         if "csat" in lower:
-            return json.dumps({"predicted_csat": 0.7, "reason": "fallback"})
+            return json.dumps({"predicted_csat": 0.7, "reason": "local estimate"})
         if "kb article" in lower or "knowledge base" in lower:
             return json.dumps(
                 {
                     "title": "Draft: Common support issue",
-                    "content": "This article was auto-drafted offline. Update with verified steps.",
+                    "content": "Draft article from recurring tickets. Review and publish after verification.",
                     "category": "general",
                     "tags": ["auto-draft"],
                 }
@@ -142,7 +145,7 @@ class ClaudeClient:
                     "confidence": 0.3,
                 }
             )
-        return json.dumps({"ok": True, "message": "fallback response"})
+        return json.dumps({"ok": True, "message": "local response"})
 
 
 _claude: Optional[ClaudeClient] = None

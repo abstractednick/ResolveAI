@@ -74,7 +74,7 @@ def widget_query(
         )
         answered = True
     else:
-        # Ask Claude if it can answer briefly from similar context
+        # Optional model answer when KB similarity is below threshold
         claude = get_claude()
         result = claude.complete_json(
             system="Decide if you can answer. Return {answered, answer, confidence}.",

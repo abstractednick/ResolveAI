@@ -1,6 +1,6 @@
 # ResolveAI — AI-Powered Ticket Automation & Support Resolution Platform
 
-> Full production-grade support automation system — not an MVP. Classifies, resolves, routes, translates, and summarizes tickets end to end, with agent-assist tools and admin dashboard. Built to be handed straight to Cursor AI as a phased build plan.
+> Production support automation system. Classifies, resolves, routes, translates, and summarizes tickets end to end, with agent-assist tools and an admin dashboard. This document is the product/architecture spec used to implement ResolveAI.
 
 ---
 
@@ -52,9 +52,9 @@
 
 ---
 
-## 4. Step-by-Step Development Plan — Cursor AI Prompts
+## 4. Step-by-Step Implementation Plan
 
-Paste each prompt into Cursor in order. Test and commit after every phase.
+Build and verify in this order. Commit after every phase.
 
 ### Phase 1 — Project Foundation
 ```
@@ -222,12 +222,9 @@ Document rollback procedure in README.
 
 ---
 
-## 6. Notes for Interview / Resume Framing
-- **Why it's a full product, not an MVP:** multi-tenant from day one, auth + RBAC, 
-  audit logging, SLA policies per tenant, production monitoring and CI/CD included.
-- **Most complex piece:** auto-resolution bot — agent has to decide confidently 
-  whether it can resolve or must hand off, using tool-calls with real side effects.
-- **Agentic core:** classification → similarity search → auto-resolve attempt → 
-  escalation/SLA check, all chained per ticket without hardcoded rules.
-- **Claude usage:** classification, reply generation, summarization, translation, 
-  and the auto-resolution agent all run on Claude.
+## 6. Design Notes
+
+- Multi-tenant from day one: auth + RBAC, audit logging, SLA policies per tenant, monitoring and CI/CD.
+- Hardest subsystem: auto-resolution — must decide confidently whether to resolve or hand off, using tool calls with side effects.
+- Processing core: classification → similarity search → auto-resolve attempt → escalation/SLA check, chained per ticket.
+- Model usage: classification, reply generation, summarization, translation, and the auto-resolution agent call the Anthropic API.

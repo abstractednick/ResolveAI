@@ -113,7 +113,7 @@ def attempt_auto_resolve(ticket_id: UUID, session: Session | None = None) -> dic
             fallback=None,
         )
 
-        # Heuristic fallback if Claude unavailable
+        # Heuristic plan when the model client returns nothing usable
         if not plan:
             text = f"{ticket.subject} {ticket.body}".lower()
             if "password" in text or "login" in text:

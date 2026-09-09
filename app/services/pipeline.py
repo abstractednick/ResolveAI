@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def process_new_ticket(ticket_id: UUID) -> dict:
     """
-    Agentic chain:
+    Ticket processing chain:
     translate → classify → sentiment → embed → dedup → similar/KB →
     auto-resolve → first response → SLA → summary → KB updater
     """
